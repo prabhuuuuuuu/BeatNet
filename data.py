@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder #ganre strings to integers
 import torch
 from torch.utils.data import Dataset, DataLoader
-from features import extarct_mfcc, extract_mel_spectrogram
+from features import extract_mfcc, extract_mel_spectrogram
 
 with open('config.yaml', 'r') as f:
     config = yaml.safe_load(f)
@@ -39,41 +39,41 @@ class GenreDataset(Dataset):
 
         return features, label
     
-    def load_and_split_data(dataset_path, config):
-        file_list = []
-        genre_list = []
+def load_and_split_data(dataset_path, config):
+    file_list = []
+    genre_list = []
 
-        genres = os.listdir(dataset_path)
+    genres = os.listdir(dataset_path)
 
-        for genre in genres:
-            genre_path = os.path.join(dataset_path, genre)
-            for file in os.listdr(genre_path):
-                if file.endswith('.wav'):
-                    file_list.append(os.path.join(genre_path, file))
-                    genre_list.append(genre)
+    for genre in genres:
+        genre_path = os.path.join(dataset_path, genre)
+        for file in os.listdr(genre_path):
+            if file.endswith('.wav'):
+                file_list.append(os.path.join(genre_path, file))
+                genre_list.append(genre)
 
-        
-        label_encoder = LabelEncoder()
-
-        labels = label_encoder.fit_trasnform(genre_list)
-
-        train_files, temp_files, train_labels, temp_labels = train_test_split(file_list, labels, train_size = config['split']['train_size'], stratify=labels, random_state=config['states']['random_seed'])
-
-        val_files, test_files, val_labels, test_labels = train_test_split(temp_files, temp_labels, train_size = config['split']['val_size'], stratify=temp_labels, random_state=config['states']['random_seed'])
-
-        return (train_files, train_labels), (val_files, val_labels), (test_files, test_labels)
     
-    def get_dataloader(model_type = 'cnn'): #to create dataloader
-        train_data, val_data, test<data, label_encoder = load_and_split_data(config['data']['dataset_path'], config)
-        train_dataset = GenreDataset(train_data[0], train_data[1], model_type)
-        val_dataset = GenreDataset(val_data[0], val_data[1], model_type)
-        test_dataset = GenreDataset(test_data[0], test_data[1], model_type)
+    label_encoder = LabelEncoder()
 
-        train_loader = DataLoader(train_datasdet, batch_size = config['training']['batch_size'], shuffle = True)
-        val_loader = DataLoader(val_dataset, batch_size = config['training']['batch_size'], shuffle = False)
-        test_loader = DataLoader(test_dataset, batch_size = config['training']['batch_size'], shuffle = False)
+    labels = label_encoder.fit_trasnform(genre_list)
 
-        return train_loader, val_loader, test_loader, label_encoder
+    train_files, temp_files, train_labels, temp_labels = train_test_split(file_list, labels, train_size = config['split']['train_size'], stratify=labels, random_state=config['states']['random_seed'])
+
+    val_files, test_files, val_labels, test_labels = train_test_split(temp_files, temp_labels, train_size = config['split']['val_size'], stratify=temp_labels, random_state=config['states']['random_seed'])
+
+    return (train_files, train_labels), (val_files, val_labels), (test_files, test_labels)
+
+def get_dataloaders(model_type = 'cnn'): #to create dataloader
+    train_data, val_data, test_data, label_encoder = load_and_split_data(config['data']['dataset_path'], config)
+    train_dataset = GenreDataset(train_data[0], train_data[1], model_type)
+    val_dataset = GenreDataset(val_data[0], val_data[1], model_type)
+    test_dataset = GenreDataset(test_data[0], test_data[1], model_type)
+
+    train_loader = DataLoader(train_dataset, batch_size = config['training']['batch_size'], shuffle = True)
+    val_loader = DataLoader(val_dataset, batch_size = config['training']['batch_size'], shuffle = False)
+    test_loader = DataLoader(test_dataset, batch_size = config['training']['batch_size'], shuffle = False)
+
+    return train_loader, val_loader, test_loader, label_encoder
 
 
 

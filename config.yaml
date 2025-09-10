@@ -1,0 +1,27 @@
+# config.yaml
+data:
+  dataset_path: "data/raw/"
+  sample_rate: 22050
+  n_mfcc: 13
+  n_mels: 128
+  hop_length: 512
+  n_fft: 2048
+  duration: 30
+
+splits:
+  train_size: 0.7
+  val_size: 0.15
+  test_size: 0.15
+  random_seed: 42
+
+training:
+  batch_size: 32
+  epochs: 50
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  dropout: 0.5
+
+models:
+  cnn_input_shape: [1, 128, 130]
+  lstm_input_shape: [13, 1291]
+  num_classes: 10

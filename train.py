@@ -63,3 +63,8 @@ def train_model(model_type='cnn'):
             torch.save(model.state_dict(), f"results/checkpoints/best_{model_type}.pth")
     
     print("Training complete.")
+
+if __name__ == "__main__":
+    train_model('cnn')
+    train_model('lstm')
+

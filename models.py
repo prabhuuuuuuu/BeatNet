@@ -1,6 +1,6 @@
 #defines our CNN and LSTM models
 
-import torch.nn as n
+import torch.nn as nn
 import yaml
 
 with open('config.yaml', 'r') as f:
@@ -46,5 +46,5 @@ class GenreLSTM(nn.Module):
         x = self.dropout(h_n)
         x = self.fc(x)
         return x
-n
+
 
