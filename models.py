@@ -46,5 +46,5 @@ class GenreLSTM(nn.Module):
         x = self.dropout(h_n)
         x = self.fc(x)
         return x
-
+n
 
