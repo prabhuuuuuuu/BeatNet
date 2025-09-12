@@ -1,4 +1,3 @@
-# config.yaml
 data:
   dataset_path: "data/raw/"
   sample_rate: 22050
@@ -16,12 +15,12 @@ splits:
 
 training:
   batch_size: 32
-  epochs: 50
+  epochs: 100  # Start small for testing
   learning_rate: 0.001
   weight_decay: 0.0001
   dropout: 0.5
 
 models:
-  cnn_input_shape: [1, 128, 130]
-  lstm_input_shape: [13, 1291]
+  cnn_input_shape: [1, 128, 130]  # [channels, height, width] - should match Mel spectrogram
+  lstm_input_shape: [13, 1291]    # [MFCC coeffs, sequence length]
   num_classes: 10

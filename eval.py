@@ -61,3 +61,7 @@ def evaluate_model(model_type='cnn', checkpoint_path=None):
         print(f"{genre}: Precision {precision[i]:.4f}, Recall {recall[i]:.4f}, F1 {f1[i]:.4f}")
     
     return accuracy, conf_matrix
+
+if __name__ == "__main__":
+    evaluate_model('cnn', 'results/checkpoints/best_cnn.pth')
+    evaluate_model('lstm', 'results/checkpoints/best_lstm.pth')
