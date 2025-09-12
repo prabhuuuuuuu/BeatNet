@@ -11,14 +11,16 @@ class GenreCNN(nn.Module):
         super(GenreCNN, self).__init__()
         
         self.conv1 = nn.Conv2d(in_channels=input_shape[0], out_channels=32, kernel_size=3, padding=1)
+        self.bn1 = nn.BatchNorm2d(32) # Added BatchNorm layer
         self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1) 
+        self.bn2 = nn.BatchNorm2d(64) # Added BatchNorm layer
         self.pool = nn.MaxPool2d(2, 2)
         self.dropout = nn.Dropout(dropout)
         
         with torch.no_grad():
             dummy_input = torch.zeros(1, *input_shape)
-            dummy_out = self.pool(nn.functional.relu(self.conv1(dummy_input)))
-            dummy_out = self.pool(nn.functional.relu(self.conv2(dummy_out)))
+            dummy_out = self.pool(nn.functional.relu(self.bn1(self.conv1(dummy_input))))
+            dummy_out = self.pool(nn.functional.relu(self.bn2(self.conv2(dummy_out))))
             num_features = dummy_out.numel() 
         
         self.fc1 = nn.Linear(num_features, 128)
@@ -26,8 +28,10 @@ class GenreCNN(nn.Module):
         print(f'Debug: CNN fc1 input features calculated as: {num_features}')
 
     def forward(self, x):
-        x = self.pool(nn.functional.relu(self.conv1(x)))
-        x = self.pool(nn.functional.relu(self.conv2(x)))  
+        # Apply conv -> batchnorm -> relu -> pool
+        x = self.pool(nn.functional.relu(self.bn1(self.conv1(x))))
+        x = self.pool(nn.functional.relu(self.bn2(self.conv2(x))))
+
         x = x.view(x.size(0), -1)  # Flatten
         x = nn.functional.relu(self.fc1(x)) 
         x = self.dropout(x)

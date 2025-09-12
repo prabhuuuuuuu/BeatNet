@@ -5,9 +5,8 @@ import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
 
-def extract_mfcc(audio_path, sample_rate, n_mfcc, hop_length, n_fft, duration, target_seq_len=1291):
+def extract_mfcc(audio, sr, n_mfcc, hop_length, n_fft, target_seq_len=1291):
     try:
-        audio, sr = librosa.load(audio_path, sr=sample_rate, duration=duration)
         mfcc = librosa.feature.mfcc(y=audio, sr=sr, n_mfcc=n_mfcc, hop_length=hop_length, n_fft=n_fft)
         mfcc = mfcc.T
         
@@ -19,12 +18,11 @@ def extract_mfcc(audio_path, sample_rate, n_mfcc, hop_length, n_fft, duration, t
         
         return mfcc
     except Exception as e:
-        print(f"Error extracting MFCC from {audio_path}: {e}. Skipping file.")
+        print(f"Error extracting MFCC: {e}. Skipping file.")
         return None
 
-def extract_mel_spectrogram(audio_path, sample_rate, n_mels, hop_length, n_fft, duration, target_width=130):
+def extract_mel_spectrogram(audio, sr, n_mels, hop_length, n_fft, target_width=130):
     try:
-        audio, sr = librosa.load(audio_path, sr=sample_rate, duration=duration)
         mel_spec = librosa.feature.melspectrogram(y=audio, sr=sr, n_mels=n_mels, hop_length=hop_length, n_fft=n_fft)
         mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
         
@@ -37,5 +35,5 @@ def extract_mel_spectrogram(audio_path, sample_rate, n_mels, hop_length, n_fft, 
         mel_spec_db = np.expand_dims(mel_spec_db, axis=0)
         return mel_spec_db
     except Exception as e:
-        print(f"Error extracting Mel spectrogram from {audio_path}: {e}. Skipping file.")
+        print(f"Error extracting Mel spectrogram: {e}. Skipping file.")
         return None

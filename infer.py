@@ -3,6 +3,7 @@ import yaml
 from models import GenreCNN, GenreLSTM
 from features import extract_mfcc, extract_mel_spectrogram
 import numpy as np
+import librosa
 
 with open('config.yaml', 'r') as f:
     config = yaml.safe_load(f)
@@ -10,15 +11,20 @@ with open('config.yaml', 'r') as f:
 def infer_genre(custom_audio_path, model_type='cnn', checkpoint_path=None, label_encoder=None):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
+    # Load audio first
+    audio, sr = librosa.load(
+        custom_audio_path, 
+        sr=config['data']['sample_rate'], 
+        duration=config['data']['duration']
+    )
+    
     if model_type == 'cnn':
         model = GenreCNN(config['models']['cnn_input_shape'], config['models']['num_classes'], config['training']['dropout'])
         features = extract_mel_spectrogram(
-            custom_audio_path,
-            config['data']['sample_rate'],
+            audio, sr,
             config['data']['n_mels'],
             config['data']['hop_length'],
-            config['data']['n_fft'],
-            config['data']['duration']
+            config['data']['n_fft']
         )
     else:
         model = GenreLSTM(
@@ -29,12 +35,10 @@ def infer_genre(custom_audio_path, model_type='cnn', checkpoint_path=None, label
             dropout=config['training']['dropout']
         )
         features = extract_mfcc(
-            custom_audio_path,
-            config['data']['sample_rate'],
+            audio, sr,
             config['data']['n_mfcc'],
             config['data']['hop_length'],
-            config['data']['n_fft'],
-            config['data']['duration']
+            config['data']['n_fft']
         )
     
     features = (features - np.mean(features)) / np.std(features)
