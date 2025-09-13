@@ -14,11 +14,13 @@ splits:
   random_seed: 42
 
 training:
-  batch_size: 16
-  epochs: 100  # Start small for testing
-  learning_rate: 0.0001
+  batch_size: 32
+  epochs: 100
+  learning_rate: 0.001
   weight_decay: 0.0001
-  dropout: 0.3
+  dropout: 0.4 
+  early_stopping_patience: 15
+
 
 models:
   cnn_input_shape: [1, 128, 130]  # [channels, height, width] - should match Mel spectrogram
